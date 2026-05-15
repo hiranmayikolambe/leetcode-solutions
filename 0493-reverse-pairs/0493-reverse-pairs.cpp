@@ -4,7 +4,6 @@ public:
         if (nums.empty()) return 0;
         return mergeSort(nums, 0, nums.size() - 1);
     }
-
     int mergeSort(vector<int> &nums, int low, int high){
         if (low >= high) return 0;
         int mid = low + (high - low) / 2;
@@ -15,7 +14,6 @@ public:
         merge(nums, low, mid, high);
         return cnt;
     }
-
     int countPairs(vector<int> &nums, int low, int mid, int high){
         int right = mid + 1;
         int cnt = 0; 
@@ -27,7 +25,6 @@ public:
         }     
         return cnt;   
     }
-
     void merge(vector<int> &nums, int low, int mid, int high){
         vector<int> temp;
         int left = low;
@@ -41,7 +38,6 @@ public:
         }
         while(left <= mid) temp.push_back(nums[left++]);
         while(right <= high) temp.push_back(nums[right++]);
-
         for (int i = low; i <= high; i++){
             nums[i] = temp[i - low];
         }
