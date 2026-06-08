@@ -1,91 +1,43 @@
-class Solution {        
+class Solution {
 public:
-    long long subArrayRanges(vector<int> &arr) {
-        return ( sumSubarrayMaxs(arr) - sumSubarrayMins(arr) );
-    }
-private:
-    vector<int> findNSE(vector<int> &arr) {        
-        int n = arr.size();
-        vector<int> ans(n);
+    long long subArrayRanges(vector<int>& nums) {
+        int n = nums.size();
+        vector<long long> leftMin(n), rightMin(n);
+        vector<long long> leftMax(n), rightMax(n);
         stack<int> st;
-        for(int i = n - 1; i >= 0; i--) {
-            int currEle = arr[i];
-            while(!st.empty() && arr[st.top()] >= currEle){
+        for (int i = 0; i < n; i++) {
+            while (!st.empty() && nums[st.top()] > nums[i])
                 st.pop();
-            }
-            ans[i] = !st.empty() ? st.top() : n;
+            leftMin[i] = st.empty() ? i + 1 : i - st.top();
             st.push(i);
         }
-        return ans;
-    }
-    vector<int> findNGE(vector<int> &arr) {
-        int n = arr.size();
-        vector<int> ans(n);
-        stack<int> st;
-        for(int i = n - 1; i >= 0; i--) {
-            int currEle = arr[i];
-            while(!st.empty() && arr[st.top()] <= currEle){
+        while (!st.empty()) st.pop();
+        for (int i = n - 1; i >= 0; i--) {
+            while (!st.empty() && nums[st.top()] >= nums[i])
                 st.pop();
-            }
-            ans[i] = !st.empty() ? st.top() : n;
+            rightMin[i] = st.empty() ? n - i : st.top() - i;
             st.push(i);
         }
-        return ans;
-    }
-    vector<int> findPSEE(vector<int> &arr) {
-        int n = arr.size();
-        vector<int> ans(n);
-        stack<int> st;
-        for(int i=0; i < n; i++) {
-            int currEle = arr[i];
-            while(!st.empty() && arr[st.top()] > currEle){
+        while (!st.empty()) st.pop();
+        for (int i = 0; i < n; i++) {
+            while (!st.empty() && nums[st.top()] < nums[i])
                 st.pop();
-            }
-            ans[i] = !st.empty() ? st.top() : -1;
+            leftMax[i] = st.empty() ? i + 1 : i - st.top();
             st.push(i);
         }
-        return ans;
-    }
-    vector<int> findPGEE(vector<int> &arr) {
-        int n = arr.size();
-        vector<int> ans(n);
-        stack<int> st;
-        for(int i=0; i < n; i++) {
-            int currEle = arr[i];
-            while(!st.empty() && arr[st.top()] < currEle){
+        while (!st.empty()) st.pop();
+        for (int i = n - 1; i >= 0; i--) {
+            while (!st.empty() && nums[st.top()] <= nums[i])
                 st.pop();
-            }
-            ans[i] = !st.empty() ? st.top() : -1;
+            rightMax[i] = st.empty() ? n - i : st.top() - i;
             st.push(i);
         }
-        return ans;
-    }
-    long long sumSubarrayMins(vector<int> &arr) {        
-        vector<int> nse = findNSE(arr);        
-        vector<int> psee = findPSEE(arr);        
-        int n = arr.size();
-        long long sum = 0;
-        for(int i=0; i < n; i++) {
-            int left = i - psee[i];
-            int right = nse[i] - i;
-            long long freq = left*right*1LL;
-            long long val = (freq*arr[i]*1LL);
-            sum += val;
+        long long maxSum = 0;
+        long long minSum = 0;
+        for (int i = 0; i < n; i++) {
+            maxSum += 1LL * nums[i] * leftMax[i] * rightMax[i];
+            minSum += 1LL * nums[i] * leftMin[i] * rightMin[i];
         }
-        return sum;
-    }
-    long long sumSubarrayMaxs(vector<int> &arr) {
-        vector<int> nge = findNGE(arr);        
-        vector<int> pgee = findPGEE(arr);        
-        int n = arr.size();
-        long long sum = 0;
-        for(int i=0; i < n; i++) {
-            int left = i - pgee[i];
-            int right = nge[i] - i;
-            long long freq = left*right*1LL;
-            long long val = (freq*arr[i]*1LL);
-            sum += val;
-        }
-        return sum;
+        return maxSum - minSum;
     }
 };
