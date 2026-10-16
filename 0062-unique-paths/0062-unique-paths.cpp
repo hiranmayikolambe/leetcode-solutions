@@ -1,17 +1,22 @@
 class Solution {
 public:
     int uniquePaths(int m, int n) {
-        vector<vector<int>> dp(m, vector<int>(n, 0));
-        dp[m - 1][n - 1] = 1;
+        vector<int> nextRow(n, 0);
         for (int row = m - 1; row >= 0; row--) {
+            vector<int> currentRow(n, 0);
             for (int column = n - 1; column >= 0; column--) {
-                if (row == m - 1 && column == n - 1) continue;
-                int downPaths = row + 1 < m ? dp[row + 1][column] : 0;
-                int rightPaths = column + 1 < n ? dp[row][column + 1] : 0;
-                dp[row][column] = downPaths + rightPaths;
+                if (row == m - 1 && column == n - 1) {
+                    currentRow[column] = 1;
+                    continue;
+                }
+                int downPaths = nextRow[column];
+                int rightPaths = column + 1 < n ? currentRow[column + 1] : 0;
+                int current = downPaths + rightPaths;
+                currentRow[column] = current;
             }
+            nextRow = currentRow;
         }
-        return dp[0][0];
+        return nextRow[0];
     }
 };
 
